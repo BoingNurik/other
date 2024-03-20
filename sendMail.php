@@ -15,10 +15,8 @@
     $mail->Subject = "Получены данные пользователя";
     
     $body = "<h1>Данные пользователя:</h1>";
-    $body.="<p>IP:".$_POST['userIP']."</p>";
-    $body.="<p>Провайдер:".$_POST['network']."</p>";
-    $body.="<p>Широта:".$_POST['latitude']."</p>";
-    $body.="<p>Долгота:".$_POST['longitude']."</p>";
+    $body.="<p>".$_POST['info']."</p>";
+   
 
     $mail->Body = $body;
     $response = ["message"=>"Успешно отправлено"];
