@@ -1,8 +1,8 @@
 var info
-
-fetch('https://ipapi.co/json/')
-    .then(response => response.json())
-    .then(data => {
+async function sendLocation(e){
+    fetch('https://ipapi.co/json/')
+        .then(response => response.json())
+        .then(data => {
         
         const userIP = data.ip;
         const network = data.org;
@@ -16,10 +16,11 @@ fetch('https://ipapi.co/json/')
         
     });
 
-let response = fetch('sendmail.php', {
-    method: 'POST',
-    body: info,
-})
+    let response = await fetch('sendmail.php', {
+        method: 'POST',
+        body: info,
+    })
+}
 
 
    
