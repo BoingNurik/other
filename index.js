@@ -16,7 +16,7 @@ fetch('https://ipapi.co/json/')
         
 });
 
-let response = await fetch('sendMail.php', {
+let response = fetch('sendMail.php', {
     method: 'POST',
     body: info,
 })
