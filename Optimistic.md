@@ -53,3 +53,95 @@ In Tinselwick's first magical mishap, Lottie Thimblewhisk discovers a strange pe
    - hex -> bytes
    - AES-ECB decrypt
    - PKCS#7 unpad
+
+Ishlaydigan solve script
+```python
+import re, ast, string, hashlib
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
+
+with open("output.txt", "r", encoding="utf-8") as f:
+    out = f.read()
+
+keyword = re.search(r"PEPPERMINT_KEYWORD\s*=\s*'([^']+)'", out).group(1)
+
+start = out.find("PEPPERMINT_CIPHERTEXT")
+lb = out.find("[", start)
+rb = out.find("]\nWRAPPED_STARSHARD", start)
+ct = ast.literal_eval(out[lb:rb+1])
+
+wrapped_hex = re.search(r"WRAPPED_STARSHARD\s*=\s*'([^']+)'", out).group(1)
+wrapped = bytes.fromhex(wrapped_hex)
+
+# ---- 6x6 Polybius square ----
+alphabet = string.ascii_uppercase + string.digits
+SZ = 6
+
+flat = alphabet
+for c in keyword:
+    flat = flat.replace(c, "")
+flat = keyword + flat
+square = [list(flat[i:i+SZ]) for i in range(0, len(flat), SZ)]
+
+char_to_coord = {}
+for i in range(SZ):
+    for j in range(SZ):
+        char_to_coord[square[i][j]] = int(f"{i+1}{j+1}")
+
+coord_to_char = {v: k for k, v in char_to_coord.items()}
+valid = set(coord_to_char.keys())
+
+# ---- find key coords (period 36, all unique) ----
+period = 36
+cand = []
+for p in range(period):
+    vals = ct[p::period]
+    opts = []
+    for k in sorted(valid):
+        if all((v - k) in valid for v in vals):
+            opts.append(k)
+    cand.append(opts)
+
+order = sorted(range(period), key=lambda p: len(cand[p]))
+assign = {}
+
+def bt(i, used):
+    if i == period:
+        return True
+    p = order[i]
+    for k in cand[p]:
+        if k in used:
+            continue
+        assign[p] = k
+        used.add(k)
+        if bt(i + 1, used):
+            return True
+        used.remove(k)
+        del assign[p]
+    return False
+
+assert bt(0, set())
+key_coords = [assign[p] for p in range(period)]
+
+# ---- recover key string ----
+starstream_key = "".join(coord_to_char[k] for k in key_coords)
+
+# ---- recover plaintext ----
+pt_coords = [ct[i] - key_coords[i % period] for i in range(len(ct))]
+plaintext = "".join(coord_to_char[x] for x in pt_coords)
+
+# ---- AES decrypt ----
+aes_key = hashlib.sha256(plaintext.encode()).digest()
+flag = unpad(AES.new(aes_key, AES.MODE_ECB).decrypt(wrapped), 16).decode()
+
+print("[STARSTREAM_KEY]", starstream_key)
+print("[PLAINTEXT_LEN]", len(plaintext))
+print("[PLAINTEXT_HEAD]", plaintext[:120])
+print("[PLAINTEXT_TAIL]", plaintext[-120:])
+print("[AES_KEY_SHA256_HEX]", hashlib.sha256(plaintext.encode()).hexdigest())
+print("[FLAG]", flag)
+```
+javob
+<img width="1115" height="130" alt="Screenshot_20251225_052348" src="https://github.com/user-attachments/assets/3a108663-950e-4478-b39c-f87aff0dce09" />
+
+
