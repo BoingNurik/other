@@ -17,7 +17,7 @@ In Tinselwick's first magical mishap, Lottie Thimblewhisk discovers a strange pe
    - `source.py` (shifrlash logikasi)
    - `output.txt` (bizga berilgan ciphertext va AES blob)
 
-   ![Screenshot — zip ichidagi fayllar](PASTE_SCREENSHOT_HERE)
+<img width="832" height="101" alt="Screenshot_20251225_015937" src="https://github.com/user-attachments/assets/38b7c1d6-78c9-43ec-88cd-78dabb79f04d" />
 
 2. `source.py` ni ochib, shifrlash nimadan iborat ekanini tushunib olamiz. Bu yerda 3 ta muhim detal bor:
    - Alphabet: `A-Z0-9` (36 ta belgi)
